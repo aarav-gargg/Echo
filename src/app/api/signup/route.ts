@@ -30,7 +30,7 @@ export async function POST(request : Request){
             if(existingUserByEmail.isVerified){
                 return Response.json({
                     success : false ,
-                    message : "USER ALREADY EXISTS WITH THE EMAIL"
+                    message : "USER ALREADY EXISTS WITH THIS EMAIL"
                 } , {
                     status : 400
                 })
@@ -73,7 +73,7 @@ export async function POST(request : Request){
 
         return Response.json({
             success : true ,
-            message : "VERFICATION EMAIL HAS BEEN SENT PLEASE BERIFY YOUR EMAIL"
+            message : "SIGNES UP SUCCESSFULLY PLEASE VERIFY YOUR EMAIL"
         } , {
             status : 201
         })
