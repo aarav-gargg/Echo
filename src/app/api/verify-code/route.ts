@@ -9,65 +9,54 @@ const verifyUserSchema = z.object({
 });
 
 export async function POST(request: Request) {
+
   await dbConnect();
 
   try {
-
-    const body = await request.json();
-    const result = verifyUserSchema.safeParse(body);
-
-    if (!result.success) {
-      const errors = result.error.format();
-      const usernameErrors = errors.username?._errors || [];
-      const codeErrors = errors.code?._errors || [];
-
-      return Response.json(
-        {
-          success: false,
-          message: [...usernameErrors, ...codeErrors].join(", ") || "Invalid input",
-        },
-        { status: 400 }
-      );
-    }
-
-    const { username, code } = result.data;
-
-
-    const user = await UserModel.findOne({ username });
+    const { username, code } = await request.json();
+    const decodedUsername = decodeURIComponent(username);
+    const user = await UserModel.findOne({ username: decodedUsername });
 
     if (!user) {
       return Response.json(
-        { success: false, error: "USER NOT FOUND" },
+        { success: false, message: 'User not found' },
         { status: 404 }
       );
     }
 
+ 
     const isCodeValid = user.verifyCode === code;
-    const notExpired = new Date(user.verifyCodeExpiry) > new Date();
+    const isCodeNotExpired = new Date(user.verifyCodeExpiry) > new Date();
 
-    if (isCodeValid && notExpired) {
+    if (isCodeValid && isCodeNotExpired) {
+
       user.isVerified = true;
       await user.save();
 
       return Response.json(
-        { success: true, message: "ACCOUNT VERIFICATION DONE SUCCESSFULLY" },
+        { success: true, message: 'Account verified successfully' },
         { status: 200 }
       );
-    } else if (!notExpired) {
+    } else if (!isCodeNotExpired) {
+      // Code has expired
       return Response.json(
-        { success: false, error: "VERIFICATION CODE EXPIRED, SIGNUP AGAIN" },
+        {
+          success: false,
+          message:
+            'Verification code has expired. Please sign up again to get a new code.',
+        },
         { status: 400 }
       );
     } else {
       return Response.json(
-        { success: false, error: "INCORRECT CODE" },
+        { success: false, message: 'Incorrect verification code' },
         { status: 400 }
       );
     }
   } catch (error) {
-    console.log("ERROR CHECKING RESPONSE", error);
+    console.error('Error verifying user:', error);
     return Response.json(
-      { success: false, error: "Error verifying user" },
+      { success: false, message: 'Error verifying user' },
       { status: 500 }
     );
   }
