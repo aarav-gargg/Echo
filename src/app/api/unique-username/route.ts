@@ -38,7 +38,7 @@ export async function GET(request : Request){
         if(existingUser){
             return Response.json({
                 success : false ,
-                error : "USERNAME ALREADY EXISTS"
+                error : "Username already taken"
             } , {
                 status : 400
             })
@@ -46,7 +46,7 @@ export async function GET(request : Request){
 
         return Response.json({
             success : true ,
-            error : "USERNAME IS AVAILABLE"
+            message : "Username available"
         } , {
             status : 200
         })

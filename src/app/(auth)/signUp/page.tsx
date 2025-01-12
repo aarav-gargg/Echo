@@ -4,9 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, SubmitHandler } from "react-hook-form"
 import { z } from "zod"
 import Link from "next/link"
-import { useDebounceValue } from 'usehooks-ts'
+import { useDebounceValue , useDebounceCallback} from 'usehooks-ts'
 import { useToast } from "@/hooks/use-toast"
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import { signUpSchema } from '@/schemas/signUpSchema'
 import axios, { AxiosError } from 'axios'
 import { ApiResponse } from '@/types/ApiResponse'
@@ -24,27 +24,28 @@ const page = () => {
     const [isCheckingUsername, setIsCheckingUsername] = useState(false)
     const [isSubmitting, setisSubmitting] = useState(false)
     const { toast } = useToast();
+    const router = useRouter();
     
 
-    const debouncedUsername = useDebounceValue(username, 300);
+    const debounced = useDebounceCallback(setUsername , 300);
 
     const form = useForm({
         resolver: zodResolver(signUpSchema),
         defaultValues: {
-            username: '',
-            email: '',
-            password: '',
+            username: "",
+            email: "",
+            password: "",
         }
     });
 
     useEffect(() => {
 
         const usernameCheck = async () => {
-            if (debouncedUsername) {
+            if (username) {
                 setIsCheckingUsername(true)
                 setUsernameMessage('')
                 try {
-                    const response = await axios.get(`/api/unique-username?username=${debouncedUsername}`)
+                    const response = await axios.get(`/api/unique-username?username=${username}`)
                     setUsernameMessage(response.data.message)
                 } catch (error) {
                     const axiosError = error as AxiosError<ApiResponse>
@@ -57,18 +58,23 @@ const page = () => {
 
         usernameCheck();
 
-    }, [debouncedUsername])
+    }, [username])
 
     const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
         setisSubmitting(true);
+        console.log("data" , data);
         try {
-            const response = await axios.post(`/api/signup`, { data })
+            const response = await axios.post(`/api/signup`, {
+                username : data.username , 
+                email : data.email , 
+                password : data.password
+            })
             if (response.data.success == true) {
                 toast({
                     title: "SUCCESS",
                     description: response.data.message,
                 })
-                // router.replace(`/verify/${username}`);
+                router.replace(`/verify/${username}`);
             }
             setisSubmitting(false);
         } catch (error) {
@@ -80,6 +86,8 @@ const page = () => {
                 description: errorMessage,
                 variant: "destructive"
             })
+        }finally {
+            setisSubmitting(false);
         }
     }
 
@@ -106,10 +114,13 @@ const page = () => {
                                     <FormControl>
                                         <Input placeholder="Username" {...field} onChange={(e) => {
                                             field.onChange(e)
-                                            setUsername(e.target.value)
+                                            debounced(e.target.value)
                                         }}/>
                                     </FormControl>
-                                    <FormDescription>This is your public display name.</FormDescription>
+                                    {isCheckingUsername && <Loader2 className='animate-spin transition-all'/>}
+                                    <p className={`font-semibold text-sm ${usernameMessage === "Username available" ? 'text-green-600' : 'text-red-600'}`}>
+                                        {usernameMessage}
+                                    </p>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -123,7 +134,6 @@ const page = () => {
                                     <FormControl>
                                         <Input placeholder="user@example.com" {...field}/>
                                     </FormControl>
-                                    <FormDescription>This is your email.</FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -137,7 +147,6 @@ const page = () => {
                                     <FormControl>
                                         <Input placeholder="Password" {...field}/>
                                     </FormControl>
-                                    <FormDescription>This is your password.</FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -147,7 +156,7 @@ const page = () => {
                             {
                                 isSubmitting ? (
                                     <>
-                                    <Loader2 /> Please wait
+                                    <Loader2 className='animate-spin'/> Please wait
                                     </>
                                 ) : ('SignUp')
                             }
