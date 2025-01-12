@@ -56,7 +56,7 @@ const SignIn = () => {
           title: "LOGIN SUCCESS",
           description: "USER LOGGED IN SUCCESSFULLY",
         })
-        router.replace('/')
+        router.replace('/dashboard')
       }
     } catch (error) {
       console.error("ERROR IN SIGNING UP", error)

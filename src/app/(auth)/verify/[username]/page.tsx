@@ -42,7 +42,7 @@ const verifyAccount = () => {
         description: response.data.message,
       })
 
-      router.replace('signIn')
+      router.replace('/signIn')
 
     } catch (error) {
       console.error("ERROR IN SIGNING UP", error)
