@@ -34,7 +34,6 @@ const SignIn = () => {
 
   const onSubmit = async (data: z.infer<typeof signInSchema>) => {
     setIsSubmitting(true);
-    console.log("data sent" , data);
     try {
       const response = await signIn('credentials', {
         redirect: false,
@@ -117,7 +116,7 @@ const SignIn = () => {
                             {
                                 isSubmitting ? (
                                     <>
-                                    <Loader2 className='animate-spin'/> Please wait
+                                    <Loader2 className='animate-spin'/> Logging In
                                     </>
                                 ) : ('Login')
                             }
