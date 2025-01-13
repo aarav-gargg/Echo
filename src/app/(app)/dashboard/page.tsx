@@ -11,7 +11,8 @@ import { useCallback, useEffect, useState } from "react"
 import { useForm } from "react-hook-form";
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { LogOut } from 'lucide-react'
+import { Separator } from "@/components/ui/separator";
+import { LogOut , Copy } from 'lucide-react'
 
 const Dahsboard = () => {
 
@@ -20,6 +21,9 @@ const Dahsboard = () => {
   const [isSwitchLoading, setIsSwitchLoading] = useState(false);
   const { toast } = useToast();
   const { data: session } = useSession();
+  const baseUrl = `${window.location.protocol}//${window.location.host}`;
+  const { username } = session?.user || "";
+  const profileUrl = `${baseUrl}/u/${username}`
 
   const form = useForm({
     resolver: zodResolver(acceptingMessagesSchema)
@@ -103,15 +107,23 @@ const Dahsboard = () => {
     }
   }
 
+  const handleCopyUrl = () => {
+    navigator.clipboard.writeText(profileUrl);
+    toast({
+      title : "Url Copied" , 
+      description : "Profile url has been copied to the clipboard"
+    })
+  }
+
   if (!session || !session.user) {
     return (
       <>
         <div className="flex flex-col  p-10 items-center justify-center m-10">
           <div className="text-2xl text-red-700 font-bold m-10 p-10">Not Logged in</div>
           <Link href="/signIn">
-              <Button className="w-full md:w-auto bg-slate-100 text-black hover:text-white" variant='default'>
-                <LogOut/> LogIn
-              </Button>
+            <Button className="w-full md:w-auto bg-slate-100 text-black hover:text-white" variant='default'>
+              <LogOut /> LogIn
+            </Button>
           </Link>
         </div>
       </>
@@ -120,9 +132,34 @@ const Dahsboard = () => {
   }
 
   return (
-    <div>
-      DASHBOARD
-    </div>
+    <>
+      <div className="p-4">
+        <h1 className="text-4xl font-bold mb-4">
+          User Dashboard
+        </h1>
+        <div className="my-8 md:mx-8 lg:mx-auto p-6 bg-white rounded w-full max-w-6xl">
+          <h1 className="font-extrabold text-2xl mb-3">
+            Unleash the mystery! Share your link, spark curiosity, and let the secrets roll in.
+          </h1>
+          <div className="my-2">
+            <h2 className="text-lg font-semibold mb-2">Copy Your Link from here</h2>
+            <div className="flex flex-row">
+            <input type="text"
+              disabled
+              value={profileUrl}
+               className="input input-bordered w-full p-2 mr-2 bg-gray-100 text-black font-semibold rounded-xl"
+            />
+            <Button variant= "outline" onClick={handleCopyUrl}>
+              <Copy/> Copy
+            </Button>
+            </div>
+          </div>
+        </div>
+
+        <Separator/>
+        
+      </div>
+    </>
   )
 }
 
