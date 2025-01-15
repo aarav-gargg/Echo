@@ -135,11 +135,11 @@ const Dahsboard = () => {
 
   return (
     <>
-      <div className="p-4">
+      <div className="p-4 min-h-screen">
         <h1 className="text-4xl font-bold mb-4">
           User Dashboard
         </h1>
-        <div className="my-6 md:mx-8 lg:mx-auto p-6 bg-white rounded w-full max-w-6xl">
+        <div className="my-6 md:mx-8 lg:mx-auto p-6 rounded w-full max-w-6xl">
           <h1 className="font-extrabold text-2xl mb-3">
             Unleash the mystery! Share your link, spark curiosity, and let the secrets roll in.
           </h1>
@@ -151,7 +151,7 @@ const Dahsboard = () => {
                 value={profileUrl}
                 className="input input-bordered w-full p-2 mr-2 bg-gray-100 text-black font-semibold rounded-xl"
               />
-              <Button variant="outline" onClick={handleCopyUrl}>
+              <Button  className="bg-gradient-to-tr from-purple-600 to-pink-600" onClick={handleCopyUrl}>
                 <Copy /> Copy
               </Button>
             </div>
@@ -163,7 +163,7 @@ const Dahsboard = () => {
                 disabled={isSwitchLoading}
               />
               <span className="font-semibold text-lg font-serif">
-                Accept Messages : <span className={`${acceptingMessages ? "text-green-600" : "text-red-600"} font-bold`}>{acceptingMessages ? "On" : "Off"}</span>
+                Accept Messages : <span className="font-bold text-white">{acceptingMessages ? "On" : "Off"}</span>
               </span>
             </div>
           </div>

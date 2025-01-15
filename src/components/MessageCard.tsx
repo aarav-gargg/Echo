@@ -49,13 +49,13 @@ const MessageCard = ({ message, onMessageDelete }: messageCardProps) => {
         onMessageDelete(message._id as string);
     }
     return (
-        <Card className="card-bordered">
+        <Card className="card-bordered bg-gradient-to-tr from-purple-600 to-pink-600">
             <CardHeader>
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center text-gray-200">
                     <CardTitle>{message.content}</CardTitle>
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
-                            <Button variant='destructive'>
+                            <Button variant='default'>
                                 <X className="w-5 h-5" />
                                 Delete
                             </Button>

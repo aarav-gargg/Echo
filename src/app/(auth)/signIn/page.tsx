@@ -9,13 +9,14 @@ import React from 'react'
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from "zod"
-import { Result } from 'postcss';
 import { useRouter } from 'next/navigation';
 import { Form, FormControl, FormDescription, FormLabel, FormMessage} from '@/components/ui/form'
 import { FormField , FormItem  } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Loader2 } from 'lucide-react'
+import Link from 'next/link'
+
 
 const SignIn = () => {
 
@@ -73,13 +74,13 @@ const SignIn = () => {
   }
   
   return (
-    <div className='flex justify-center items-center min-h-screen bg-gray-100'>
-            <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-xl">
+    <div className='flex justify-center items-center min-h-screen bg-gradient-to-tr from-blue-600 via-purple-500 to-pink-500'>
+            <div className="w-full max-w-md p-8 space-y-8 bg-gradient-to-tr text-white from-purple-600 to-pink-600 rounded-lg shadow-2xl">
                 <div className='text-center'>
                     <h1 className='text-3xl font-extrabold lg:text-5xl mb-6'>
                         Join Echo Now !!
                     </h1>
-                    <p className='mb-4'>
+                    <p className='mb-4 text-gray-200'>
                         Sign up to start your anonymous adventure
                     </p>
                 </div>
@@ -92,7 +93,7 @@ const SignIn = () => {
                                 <FormItem>
                                     <FormLabel>Email</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="user@example.com" {...field}/>
+                                        <Input placeholder="user@example.com" {...field}  className = "bg-gray-400"/>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -105,12 +106,16 @@ const SignIn = () => {
                                 <FormItem>
                                     <FormLabel>Password</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Password" {...field}/>
+                                        <Input placeholder="Password" {...field} className = "bg-gray-400"/>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
+
+                        <p className='text-sm text-gray-200'>
+                          Not Registered Yet? <Link href={"/signUp"} className='font-bold underline'>SignUp here</Link> 
+                        </p>
 
                         <Button type='submit' disabled={isSubmitting}>
                             {
