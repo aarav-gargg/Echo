@@ -5,48 +5,50 @@ import UserModel from "@/model/User.model";
 import { User } from "next-auth";
 import mongoose from "mongoose";
 
-
-export async function GET(request : Request){
+export async function GET(request: Request) {
     await dbConnect();
 
-    const session = await getServerSession(authOptions)
-
-    const user: User = session?.user
+    const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
-        return Response.json({
+        return new Response(JSON.stringify({
             success: false,
             message: "You must be logged in to perform this action"
-        }, { status: 404 });
+        }), { status: 401 }); // Updated status to 401 (Unauthorized)
     }
 
-    const userId = new mongoose.Types.ObjectId(user._id);
+    const userId = new mongoose.Types.ObjectId(session.user._id);
 
     try {
-
         const userFounded = await UserModel.aggregate([
-            { $match : {id : userId} },
-            { $unwind : '$messages' } ,
-            { $sort : {'messages.createdAt' : -1} } , 
-            { $group : {_id : '$_id' , messages : {$push : 'messages'}} }
-        ])
+            { $match: { _id: userId } },
+            { $unwind: '$messages' },
+            { $sort: { 'messages.createdAt': -1 } },
+            { 
+                $group: {
+                    _id: '$_id',
+                    messages: { $push: '$messages' }
+                }
+            }
+        ]);
 
-        if(!userFounded || userFounded.length === 0){
-            return Response.json({
+        if (!userFounded || userFounded.length === 0) {
+            return new Response(JSON.stringify({
                 success: false,
                 message: "User not found"
-            }, { status: 404 });
+            }), { status: 404 });
         }
 
-        return Response.json({
+        return new Response(JSON.stringify({
             success: true,
             message: userFounded[0].messages
-        }, { status: 200 });
+        }), { status: 200 });
 
     } catch (error) {
-        return Response.json({
+        console.error("Error getting messages:", error);
+        return new Response(JSON.stringify({
             success: false,
             message: "Error getting messages"
-        }, { status: 500 });
+        }), { status: 500 });
     }
 }

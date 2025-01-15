@@ -60,7 +60,7 @@ const Dahsboard = () => {
     try {
       const response = await axios.get("/api/get-messages");
 
-      setMessages(response.data.message || []);
+      setMessages(response.data.message);
 
       if (refresh) {
         toast({
@@ -195,15 +195,17 @@ const Dahsboard = () => {
               </Button>
             </div>
           </div>
-          <div className="my-6 flex items-center justify-center">
+          <div className="container mx-auto p-4">
             {messages.length > 0 ? (
-              messages.map((item, index) => (
-                <MessageCard
-                  key={index}
-                  message={item}
-                  onMessageDelete={handleDeleteMessage}
-                />
-              ))
+              <div className="grid grid-cols-4 sm:grid-cols-2 gap-4">
+                {messages.map((item, index) => (
+                  <MessageCard
+                    key={index}
+                    message={item}
+                    onMessageDelete={handleDeleteMessage}
+                  />
+                ))}
+              </div>
             ) : (
               <div className="font-bold text-3xl text-red-700">
                 No Messages to Display.
